@@ -1,7 +1,5 @@
 #!/bin/bash
 
-#SCRIPT_DIR=$(dirname "$(realpath "$0")")
-
 # Function to check if port is valid
 is_valid_port() {
   local port=$1
