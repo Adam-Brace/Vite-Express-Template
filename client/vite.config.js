@@ -1,11 +1,13 @@
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
+import dotenv from "dotenv";
+import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react";
 
-// https://vite.dev/config/
+dotenv.config();
+
 export default defineConfig({
 	plugins: [react()],
 	server: {
-		port: 3001,
+		port: process.env.PORT,
 		open: true,
 	},
 	test: {
@@ -13,4 +15,4 @@ export default defineConfig({
 		environment: "jsdom",
 		setupFiles: "./tests/setupTests.js",
 	},
-})
+});
