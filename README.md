@@ -11,31 +11,31 @@ This ensures a robust, reliable, and efficient development process.
 
 ## Run Locally
 
-Clone the project
+### Clone the project
 
 ```bash
   git clone https://github.com/Adam-Brace/Vite-Express-Template
 ```
 
-Go to the project directory
+### Go to the project directory
 
 ```bash
   cd Vite-Express-Template
 ```
 
-Run ./setup.sh and follow the directions given
+### Run the setup script and follow the directions
 
 ```bash
   ./setup.sh
 ```
 
-Start the client
+### Start the client
 
 ```bash
   npm run dev --prefix ./client
 ```
 
-Make a new terminal and start the server
+### Make a new terminal and start the server
 
 ```bash
   npm run dev --prefix ./server
@@ -43,7 +43,7 @@ Make a new terminal and start the server
 
 ## Running Tests
 
-To run tests make sure you are in the server or client directory, then run the following command
+### To run tests, make sure you are in the server or client directory, then run the following command:
 
 ```bash
   npm run test
