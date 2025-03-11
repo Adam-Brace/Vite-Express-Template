@@ -1,5 +1,5 @@
 const request = require("supertest");
-const { app, server, port } = require("./index");
+const { app, server, PORT } = require("./index");
 
 describe("Express App", () => {
 	jest.setTimeout(10000);
@@ -11,8 +11,8 @@ describe("Express App", () => {
 	});
 
 	it("should listen on the correct port from .env", () => {
-		expect(port).toBeDefined();
-		expect(port).toMatch(/\d+/);
+		expect(PORT).toBeDefined();
+		expect(PORT).toMatch(/\d+/);
 	});
 
 	afterAll((done) => {
