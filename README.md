@@ -20,7 +20,7 @@ Ensure you have the following installed:
 -   [Node.js](https://nodejs.org/) (Recommended: v16+)
 -   npm (comes with Node.js)
 -   Git (to clone the repository)
--   PostgreSQL installed on your system[PostgreSQL Official Site](https://www.postgresql.org/download/).
+-   PostgreSQL installed on your system [PostgreSQL Official Site](https://www.postgresql.org/download/).
 
 ### 🔹 Clone the repository
 
