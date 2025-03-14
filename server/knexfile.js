@@ -1,10 +1,8 @@
+require("dotenv").config();
 module.exports = {
 	development: {
 		client: "pg",
-		connection:
-			"postgres://USER_NAME:USER_PASSWORD@localhost/DATABASE_NAME",
-		// replace USER_NAME, USER_PASSWORD, and DATABASE_NAME with your Docker PostgreSQL container's username, password and an *empty* database
-		// that you have created on your Docker PostgreSQL container volume
+		connection: `postgres://${process.env.USER_NAME}:${process.env.USER_PASSWORD}@localhost/${process.env.DATABASE_PORT}`,
 	},
 
 	staging: {
