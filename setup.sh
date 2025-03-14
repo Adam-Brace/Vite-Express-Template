@@ -12,7 +12,7 @@ is_valid_port() {
 read_env_value() {
   local file=$1
   local key=$2
-  if [ -f "$file" ]; then
+  if [ -f "$file" ] && [ -s "$file" ]; then
     value=$(awk -F= -v key="$key" '$1 == key {print $2}' "$file" | tr -d '\r')
     echo "$value"
   else
@@ -39,6 +39,7 @@ write_to_env() {
   else
     echo "$key=$value" >> "$file"
   fi
+  echo "✅ Saved '$key=$value' to $file."
 }
 
 server_env="server/.env"
@@ -47,91 +48,105 @@ client_env="client/.env"
 # Ensure directories exist
 mkdir -p server client
 
-# Get client port first
+### Step 1: Get Client Port ###
 clientPort=$(read_env_value "$client_env" "PORT")
-
-if [ -z "$clientPort" ]; then
-  while true; do
+if [ -n "$clientPort" ]; then
+  echo "ℹ️  Client port $clientPort already set in $client_env. Skipping input."
+else
+  while [ -z "$clientPort" ]; do
     echo ""
     read -p "Enter port number (1-65535) for the client (default: 3001): " clientPort
     clientPort=${clientPort:-3001}
 
     if is_valid_port "$clientPort"; then
-      echo "✅ Client port set to $clientPort."
       write_to_env "$client_env" "PORT" "$clientPort"
-      break 
     else
       echo "❌ Invalid port. Please enter a number between 1 and 65535."
+      clientPort=""
     fi
   done
-else
-  echo "✅ Client port already set to $clientPort in $client_env."
 fi
 
-# Now ask for server port
+### Step 2: Get Server Port ###
 serverPort=$(read_env_value "$server_env" "PORT")
-
-if [ -z "$serverPort" ]; then
-  while true; do
+if [ -n "$serverPort" ]; then
+  echo "ℹ️  Server port $serverPort already set in $server_env. Skipping input."
+else
+  while [ -z "$serverPort" ]; do
     echo ""
     read -p "Enter port number (1-65535) for the server (default: 3000): " serverPort
     serverPort=${serverPort:-3000}
 
-    if is_valid_port "$serverPort"; then
-      if [ "$clientPort" -eq "$serverPort" ]; then
-        echo "❌ Server port $serverPort cannot be the same as client port $clientPort. Enter a different port."
-        continue 
-      fi
-      echo "✅ Server port set to $serverPort."
+    if is_valid_port "$serverPort" && [ "$serverPort" -ne "$clientPort" ]; then
       write_to_env "$server_env" "PORT" "$serverPort"
-      break 
     else
-      echo "❌ Invalid port. Please enter a number between 1 and 65535."
+      echo "❌ Invalid port or matches client port ($clientPort). Please enter a different port."
+      serverPort=""
     fi
   done
-else
-  echo "✅ Server port already set to $serverPort in $server_env."
 fi
-echo ""
 
-# Read existing database credentials
-dbUser=$(read_env_value "$server_env" "USER_NAME")
-dbPassword=$(read_env_value "$server_env" "USER_PASSWORD")
+### Step 3: Get Database Port ###
 dbPort=$(read_env_value "$server_env" "DATABASE_PORT")
+if [ -n "$dbPort" ]; then
+  echo "ℹ️  Database port $dbPort already set in $server_env. Skipping input."
+else
+  while [ -z "$dbPort" ]; do
+    echo ""
+    read -p "Enter database port (1-65535, default: 3002): " dbPort
+    dbPort=${dbPort:-3002}
 
-# Prompt for database credentials only if they are not set
-if [ -z "$dbUser" ]; then
-  read -p "Enter database username (default: admin): " dbUser
-  dbUser=${dbUser:-admin}
-  write_to_env "$server_env" "USER_NAME" "$dbUser"
-  echo "✅ Database username set to $dbUser."
-else
-  echo "✅ Database username already set in $server_env."
+    if is_valid_port "$dbPort" && [ "$dbPort" -ne "$clientPort" ] && [ "$dbPort" -ne "$serverPort" ]; then
+      write_to_env "$server_env" "DATABASE_PORT" "$dbPort"
+    else
+      echo "❌ Invalid port or matches client/server port. Please enter a different port."
+      dbPort=""
+    fi
+  done
 fi
-echo ""
-if [ -z "$dbPassword" ]; then
-  echo -n "Enter database password (default: password): "
-  read -s dbPassword
-  echo ""
-  dbPassword=${dbPassword:-password}
-  write_to_env "$server_env" "USER_PASSWORD" "$dbPassword"
-  echo "✅ Database password set."
+
+### Step 4: Get Database Username ###
+dbUser=$(read_env_value "$server_env" "USER_NAME")
+if [ -n "$dbUser" ]; then
+  echo "ℹ️  Database username already set in $server_env. Skipping input."
 else
-  echo "✅ Database password already set in $server_env."
+  while [ -z "$dbUser" ]; do
+    echo ""
+    read -p "Enter database username (default: admin): " dbUser
+    dbUser=${dbUser:-admin}
+
+    if [ -n "$dbUser" ]; then
+      write_to_env "$server_env" "USER_NAME" "$dbUser"
+    else
+      echo "❌ Username cannot be empty. Please enter a valid username."
+    fi
+  done
 fi
-echo ""
-if [ -z "$dbPort" ]; then
-  read -p "Enter database port (default: 3002): " dbPort
-  dbPort=${dbPort:-3002}
-  write_to_env "$server_env" "DATABASE_PORT" "$dbPort"
-  echo "✅ Database port set to $dbPort."
+
+### Step 5: Get Database Password ###
+dbPassword=$(read_env_value "$server_env" "USER_PASSWORD")
+if [ -n "$dbPassword" ]; then
+  echo "ℹ️  Database password already set in $server_env. Skipping input."
 else
-  echo "✅ Database port already set in $server_env."
+  while [ -z "$dbPassword" ]; do
+    echo ""
+    read -s -p "Enter database password (default: password): " dbPassword
+    echo ""
+    dbPassword=${dbPassword:-password}
+
+    if [ -n "$dbPassword" ]; then
+      write_to_env "$server_env" "USER_PASSWORD" "$dbPassword"
+    else
+      echo "❌ Password cannot be empty. Please enter a valid password."
+    fi
+  done
 fi
+
 echo ""
-echo "✅ Database configuration saved in $server_env."
+echo "✅ Configuration saved in $server_env and $client_env."
 echo ""
 
+### Install Dependencies ###
 read -p "Would you like to install the dependencies for the server and client? (y/n) (default: n): " installDeps
 if [[ "$installDeps" =~ ^[Yy]$ ]]; then
   echo ""
@@ -148,4 +163,4 @@ else
 fi
 
 echo ""
-echo "✅ Setup complete. You can now start the server and client"
+echo "✅ Setup complete. You can now start the server and client."
