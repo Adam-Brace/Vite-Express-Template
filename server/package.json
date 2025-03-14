@@ -1,7 +1,7 @@
 {
 	"name": "server",
 	"version": "1.0.0",
-	"main": "index.js",
+	"main": "./src/index.js",
 	"scripts": {
 		"dev": "nodemon",
 		"test": "jest --watchAll"
@@ -12,7 +12,9 @@
 	"dependencies": {
 		"cookie-parser": "^1.4.7",
 		"dotenv": "^16.4.7",
-		"express": "^4.21.2"
+		"express": "^4.21.2",
+		"knex": "^3.1.0",
+		"pg": "^8.14.0"
 	},
 	"devDependencies": {
 		"jest": "^29.7.0",

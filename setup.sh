@@ -75,3 +75,5 @@ if [ "$installDeps" == "y" ]; then
 else
   echo "Skipping npm install for the server and client."
 fi
+
+echo "DO NOT forget to update the kenxfile.js file in the server directory with your database connection details."
