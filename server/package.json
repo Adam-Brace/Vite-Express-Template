@@ -3,7 +3,8 @@
 	"version": "1.0.0",
 	"main": "./src/index.js",
 	"scripts": {
-		"dev": "nodemon",
+		"dev": "nodemon --exec 'npx knex migrate:latest && node src/index.js'",
+		"start": "node src/index.js",
 		"test": "jest --watchAll"
 	},
 	"author": "",

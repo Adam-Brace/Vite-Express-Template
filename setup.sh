@@ -9,71 +9,143 @@ is_valid_port() {
   fi
 }
 
-read_port_from_env() {
+read_env_value() {
   local file=$1
+  local key=$2
   if [ -f "$file" ]; then
-    port=$(grep -E "^PORT=" "$file" | cut -d'=' -f2)
-    echo "$port"
+    value=$(awk -F= -v key="$key" '$1 == key {print $2}' "$file" | tr -d '\r')
+    echo "$value"
   else
-    echo ""  
+    echo ""
   fi
 }
 
-serverPort=$(read_port_from_env "server/.env")
+write_to_env() {
+  local file=$1
+  local key=$2
+  local value=$3
 
-if [ -z "$serverPort" ]; then
-  while true; do
-    echo ""
-    read -p "Enter port number (1-65535) for the server: " serverPort
+  if [ ! -f "$file" ]; then
+    touch "$file"
+  fi
 
-    if is_valid_port "$serverPort"; then
-      echo "Port: $serverPort is valid."
-      echo "Setting the server port in the .env file to: $serverPort..."
-      echo "PORT=$serverPort" | sudo tee server/.env > /dev/null  
-      break 
-    else
-      echo "Port: $serverPort is invalid. Please enter a valid port number between 1 and 65535."
-    fi
-  done
-else
-  echo "Server port already set to $serverPort in the .env file."
-fi
+  if [ ! -w "$file" ]; then
+    echo "❌ Error: No write permission for $file. Please check permissions and try again."
+    exit 1
+  fi
 
-clientPort=$(read_port_from_env "client/.env")
+  if grep -q "^$key=" "$file"; then
+    sed -i "s|^$key=.*|$key=$value|" "$file"
+  else
+    echo "$key=$value" >> "$file"
+  fi
+}
+
+server_env="server/.env"
+client_env="client/.env"
+
+# Ensure directories exist
+mkdir -p server client
+
+# Get client port first
+clientPort=$(read_env_value "$client_env" "PORT")
 
 if [ -z "$clientPort" ]; then
   while true; do
     echo ""
-    read -p "Enter port number (1-65535) for the client: " clientPort
+    read -p "Enter port number (1-65535) for the client (default: 3001): " clientPort
+    clientPort=${clientPort:-3001}
 
     if is_valid_port "$clientPort"; then
-      if [ "$clientPort" -eq "$serverPort" ]; then
-        echo "The client port: $clientPort is the same as the server port: $serverPort. Please enter a different port number."
-        continue 
-      fi
-      echo "Port: $clientPort is valid."
-      echo "Setting the client port in the .env file to: $clientPort..."
-      echo "PORT=$clientPort" | sudo tee client/.env > /dev/null  
+      echo "✅ Client port set to $clientPort."
+      write_to_env "$client_env" "PORT" "$clientPort"
       break 
     else
-      echo "Port: $clientPort is invalid. Please enter a valid port number between 1 and 65535."
+      echo "❌ Invalid port. Please enter a number between 1 and 65535."
     fi
   done
 else
-  echo "Client port already set to $clientPort in the .env file."
+  echo "✅ Client port already set to $clientPort in $client_env."
 fi
 
-read -p "Would you like to install the dependencies for the server and client? (y/n): " installDeps
-if [ "$installDeps" == "y" ]; then
+# Now ask for server port
+serverPort=$(read_env_value "$server_env" "PORT")
+
+if [ -z "$serverPort" ]; then
+  while true; do
+    echo ""
+    read -p "Enter port number (1-65535) for the server (default: 3000): " serverPort
+    serverPort=${serverPort:-3000}
+
+    if is_valid_port "$serverPort"; then
+      if [ "$clientPort" -eq "$serverPort" ]; then
+        echo "❌ Server port $serverPort cannot be the same as client port $clientPort. Enter a different port."
+        continue 
+      fi
+      echo "✅ Server port set to $serverPort."
+      write_to_env "$server_env" "PORT" "$serverPort"
+      break 
+    else
+      echo "❌ Invalid port. Please enter a number between 1 and 65535."
+    fi
+  done
+else
+  echo "✅ Server port already set to $serverPort in $server_env."
+fi
+echo ""
+
+# Read existing database credentials
+dbUser=$(read_env_value "$server_env" "USER_NAME")
+dbPassword=$(read_env_value "$server_env" "USER_PASSWORD")
+dbPort=$(read_env_value "$server_env" "DATABASE_PORT")
+
+# Prompt for database credentials only if they are not set
+if [ -z "$dbUser" ]; then
+  read -p "Enter database username (default: admin): " dbUser
+  dbUser=${dbUser:-admin}
+  write_to_env "$server_env" "USER_NAME" "$dbUser"
+  echo "✅ Database username set to $dbUser."
+else
+  echo "✅ Database username already set in $server_env."
+fi
+echo ""
+if [ -z "$dbPassword" ]; then
+  echo -n "Enter database password (default: password): "
+  read -s dbPassword
   echo ""
-  echo "Running npm install for the server..."
+  dbPassword=${dbPassword:-password}
+  write_to_env "$server_env" "USER_PASSWORD" "$dbPassword"
+  echo "✅ Database password set."
+else
+  echo "✅ Database password already set in $server_env."
+fi
+echo ""
+if [ -z "$dbPort" ]; then
+  read -p "Enter database port (default: 3002): " dbPort
+  dbPort=${dbPort:-3002}
+  write_to_env "$server_env" "DATABASE_PORT" "$dbPort"
+  echo "✅ Database port set to $dbPort."
+else
+  echo "✅ Database port already set in $server_env."
+fi
+echo ""
+echo "✅ Database configuration saved in $server_env."
+echo ""
+
+read -p "Would you like to install the dependencies for the server and client? (y/n) (default: n): " installDeps
+if [[ "$installDeps" =~ ^[Yy]$ ]]; then
+  echo ""
+  echo "📦 Installing dependencies for the server..."
   npm install --prefix ./server
 
   echo ""
-  echo "Running npm install for the client..."
+  echo "📦 Installing dependencies for the client..."
   npm install --prefix ./client
+  echo ""
+  echo "✅ Dependencies installed."
 else
-  echo "Skipping npm install for the server and client."
+  echo "⏭ Skipping dependency installation."
 fi
 
-echo "DO NOT forget to update the kenxfile.js file in the server directory with your database connection details."
+echo ""
+echo "✅ Setup complete. You can now start the server and client"
