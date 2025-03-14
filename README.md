@@ -25,7 +25,7 @@ Ensure you have the following installed:
 ### 🔹 Clone the repository
 
 ```bash
-git clone https://github.com/Adam-Brace/Vite-Express-Template
+  git clone https://github.com/Adam-Brace/Vite-Express-Template
 ```
 
 ### 🔹 Navigate to the project directory
@@ -60,7 +60,7 @@ When running `./setup.sh`, you may encounter one of these errors:
 
 **❌ Error:**
 
--   ` bash: ./setup.sh: Permission denied`
+-   `bash: ./setup.sh: Permission denied`
 
 -   `bash: Unknown command. './setup.sh' exists but is not an executable file.`
 
