@@ -179,6 +179,27 @@ else
   done
 fi
 
+### Step 6: Get Database Name ###
+dbName=$(read_env_value "$server_env" "DATABASE_NAME")
+if [ -n "$dbName" ]; then
+  echo "ℹ️  Database name already set in $server_env. Skipping input."
+  echo ""
+else
+  while [ -z "$dbName" ]; do
+    read -p "Enter database name (default: database): " dbName
+    echo ""  
+    dbName=${dbName:-database}
+
+    if [ -n "$dbName" ]; then
+      write_to_env "$server_env" "DATABASE_NAME" "$dbName" "server_env_updated"
+      echo ""
+    else
+      echo "❌ Name cannot be empty. Please enter a valid password."
+      echo ""
+    fi
+  done
+fi
+
 # Display which files were updated
 
 if [ "$server_env_updated" = true ] || [ "$client_env_updated" = true ]; then
