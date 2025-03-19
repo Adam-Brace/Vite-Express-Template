@@ -1,0 +1,38 @@
+services:
+  frontend:
+    build: ./client
+    ports:
+      - "${CLIENT_PORT}:${CLIENT_PORT}"  # Port from .env file
+    depends_on:
+      - backend
+    env_file:
+      - .env 
+
+  backend:
+    build: ./server
+    ports:
+      - "${SERVER_PORT}:${SERVER_PORT}"  # Port from .env file
+    environment:
+      DATABASE_URL: postgres://${USER_NAME}:${USER_PASSWORD}@db:${DATABASE_PORT}/${DATABASE_NAME}  # Database URL with values from .env
+    depends_on:
+      db:
+        condition: service_healthy
+    env_file:
+      - .env 
+
+  db:
+    restart: always
+    ports:
+      - "${DATABASE_PORT}:${DATABASE_PORT}"  # Port from .env file
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: ${USER_NAME}
+      POSTGRES_PASSWORD: ${USER_PASSWORD}
+      POSTGRES_DB: ${DATABASE_NAME}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${USER_NAME} -d ${DATABASE_NAME}"]
+      interval: 5s
+      retries: 5
+      timeout: 3s
+    volumes:
+      - $HOME/docker/volumes/postgres:/var/lib/postgresql/data
