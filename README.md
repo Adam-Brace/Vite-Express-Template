@@ -20,7 +20,7 @@ Ensure you have the following installed:
 -   [Node.js](https://nodejs.org/) (Recommended: v16+)
 -   npm (comes with Node.js)
 -   Git (to clone the repository)
--   PostgreSQL installed on your system [PostgreSQL Official Site](https://www.postgresql.org/download/).
+-   [Docker](https://www.docker.com/).
 
 ### 🔹 Clone the repository
 
@@ -40,6 +40,8 @@ Ensure you have the following installed:
   ./setup.sh
 ```
 
+## Running with Node
+
 ### 🔹 Start the client
 
 ```bash
@@ -50,6 +52,12 @@ Ensure you have the following installed:
 
 ```bash
   npm run dev --prefix ./server
+```
+
+## Running with Docker
+
+```bash
+  docker compose up --build
 ```
 
 ---
