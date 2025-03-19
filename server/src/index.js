@@ -1,9 +1,16 @@
-require("dotenv").config();
+const path = require("path");
+const dotenv = require("dotenv");
+require("dotenv").config({ path: "/app_data/.env" });
 const express = require("express");
 const app = express();
-const PORT = process.env.PORT;
+var PORT = process.env.SERVER_PORT;
 const cors = require("cors");
-const kenex = require("knex")(require("./knexfile")["development"]);
+const knex = require("knex")(require("../knexfile")["development"]);
+
+if (!PORT) {
+	dotenv.config({ path: path.resolve(__dirname, "../.env") });
+	PORT = process.env.SERVER_PORT;
+}
 
 app.get("/", (req, res) => {
 	res.send("Hello World!");

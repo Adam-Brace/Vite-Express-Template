@@ -64,154 +64,117 @@ write_to_env() {
   fi
 }
 
+# Define the shared .env file
+shared_env=".env"
 
-# Define environment files
-server_env="server/.env"
-client_env="client/.env"
+# Track changes
+env_updated=false
 
-# Track changes per file
-server_env_updated=false
-client_env_updated=false
-
-### Step 1: Get Client Port ###  
-echo ""
-clientPort=$(read_env_value "$client_env" "PORT")
+# Step 1: Get Client Port
+clientPort=$(read_env_value "$shared_env" "CLIENT_PORT")
 if [ -n "$clientPort" ]; then
-  echo "ℹ️  Client port $clientPort already set in $client_env. Skipping input."
-  echo ""
+  echo "ℹ️  Client port $clientPort already set in $shared_env. Skipping input."
 else
   while [ -z "$clientPort" ]; do
-    read -p "Enter port number (1-65535) for the client (default: 3000): " clientPort
+    read -p "Enter client port number (1-65535, default: 3000): " clientPort
     clientPort=${clientPort:-3000}
     if is_valid_port "$clientPort"; then
-      write_to_env "$client_env" "PORT" "$clientPort" "client_env_updated"
-  echo ""
+      write_to_env "$shared_env" "CLIENT_PORT" "$clientPort" "env_updated"
     else
       echo "❌ Invalid port. Please enter a number between 1 and 65535."
-      clientPort=""
     fi
   done
 fi
 
-### Step 2: Get Server Port ###
-serverPort=$(read_env_value "$server_env" "PORT")
+# Step 2: Get Server Port
+serverPort=$(read_env_value "$shared_env" "SERVER_PORT")
 if [ -n "$serverPort" ]; then
-  echo "ℹ️  Server port $serverPort already set in $server_env. Skipping input."
-  echo ""
+  echo "ℹ️  Server port $serverPort already set in $shared_env. Skipping input."
 else
   while [ -z "$serverPort" ]; do
-    read -p "Enter port number (1-65535) for the server (default: 3001): " serverPort
-
+    read -p "Enter server port number (1-65535, default: 3001): " serverPort
     serverPort=${serverPort:-3001}
-
     if is_valid_port "$serverPort" && [ "$serverPort" -ne "$clientPort" ]; then
-      write_to_env "$server_env" "PORT" "$serverPort" "server_env_updated"
-  echo ""
+      write_to_env "$shared_env" "SERVER_PORT" "$serverPort" "env_updated"
     else
       echo "❌ Invalid port or matches client port ($clientPort). Please enter a different port."
-  echo ""
-      serverPort=""
     fi
   done
 fi
 
-### Step 3: Get Database Port ###
-dbPort=$(read_env_value "$server_env" "DATABASE_PORT")
+# Step 3: Get Database Port
+dbPort=$(read_env_value "$shared_env" "DATABASE_PORT")
 if [ -n "$dbPort" ]; then
-  echo "ℹ️  Database port $dbPort already set in $server_env. Skipping input."
-  echo ""
+  echo "ℹ️  Database port $dbPort already set in $shared_env. Skipping input."
 else
   while [ -z "$dbPort" ]; do
-    read -p "Enter database port (1-65535, default: 3002): " dbPort
-
-    dbPort=${dbPort:-3002}
-
+    read -p "Enter database port number (1-65535, default: 5432): " dbPort
+    dbPort=${dbPort:-5432}
     if is_valid_port "$dbPort" && [ "$dbPort" -ne "$clientPort" ] && [ "$dbPort" -ne "$serverPort" ]; then
-      write_to_env "$server_env" "DATABASE_PORT" "$dbPort" "server_env_updated"
-  echo ""
+      write_to_env "$shared_env" "DATABASE_PORT" "$dbPort" "env_updated"
     else
       echo "❌ Invalid port or matches client/server port. Please enter a different port."
-  echo ""
-      dbPort=""
     fi
   done
 fi
 
-### Step 4: Get Database Username ###
-dbUser=$(read_env_value "$server_env" "USER_NAME")
+# Step 4: Get Database Username
+dbUser=$(read_env_value "$shared_env" "USER_NAME")
 if [ -n "$dbUser" ]; then
-  echo "ℹ️  Database username already set in $server_env. Skipping input."
-  echo ""
+  echo "ℹ️  Database username already set in $shared_env. Skipping input."
 else
   while [ -z "$dbUser" ]; do
-    read -p "Enter database username (default: admin): " dbUser
-
-    dbUser=${dbUser:-admin}
-
+    read -p "Enter database username (default: postgres): " dbUser
+    dbUser=${dbUser:-postgres}
     if [ -n "$dbUser" ]; then
-      write_to_env "$server_env" "USER_NAME" "$dbUser" "server_env_updated"
-  echo ""
+      write_to_env "$shared_env" "USER_NAME" "$dbUser" "env_updated"
     else
       echo "❌ Username cannot be empty. Please enter a valid username."
-  echo ""
     fi
   done
 fi
 
-### Step 5: Get Database Password ###
-dbPassword=$(read_env_value "$server_env" "USER_PASSWORD")
+# Step 5: Get Database Password
+dbPassword=$(read_env_value "$shared_env" "USER_PASSWORD")
 if [ -n "$dbPassword" ]; then
-  echo "ℹ️  Database password already set in $server_env. Skipping input."
-  echo ""
+  echo "ℹ️  Database password already set in $shared_env. Skipping input."
 else
   while [ -z "$dbPassword" ]; do
     read -s -p "Enter database password (default: password): " dbPassword
-    echo ""  
+    echo ""
     dbPassword=${dbPassword:-password}
-
     if [ -n "$dbPassword" ]; then
-      write_to_env "$server_env" "USER_PASSWORD" "$dbPassword" "server_env_updated" "true"
-      echo ""
+      write_to_env "$shared_env" "USER_PASSWORD" "$dbPassword" "env_updated" "true"
     else
       echo "❌ Password cannot be empty. Please enter a valid password."
-      echo ""
     fi
   done
 fi
 
-### Step 6: Get Database Name ###
-dbName=$(read_env_value "$server_env" "DATABASE_NAME")
+# Step 6: Get Database Name
+dbName=$(read_env_value "$shared_env" "DATABASE_NAME")
 if [ -n "$dbName" ]; then
-  echo "ℹ️  Database name already set in $server_env. Skipping input."
-  echo ""
+  echo "ℹ️  Database name already set in $shared_env. Skipping input."
 else
   while [ -z "$dbName" ]; do
     read -p "Enter database name (default: database): " dbName
-    echo ""  
     dbName=${dbName:-database}
-
     if [ -n "$dbName" ]; then
-      write_to_env "$server_env" "DATABASE_NAME" "$dbName" "server_env_updated"
-      echo ""
+      write_to_env "$shared_env" "DATABASE_NAME" "$dbName" "env_updated"
     else
-      echo "❌ Name cannot be empty. Please enter a valid password."
-      echo ""
+      echo "❌ Name cannot be empty. Please enter a valid database name."
     fi
   done
 fi
 
-# Display which files were updated
-
-if [ "$server_env_updated" = true ] || [ "$client_env_updated" = true ]; then
-  echo "✅ Configuration updated successfully in:"
-  [ "$server_env_updated" = true ] && echo "   - $server_env"
-  [ "$client_env_updated" = true ] && echo "   - $client_env"
+# Display the updated environment variables
+if [ "$env_updated" = true ]; then
+  echo "✅ Configuration updated successfully in $shared_env."
 else
-  echo "ℹ️  No changes were made to the configuration files."
+  echo "ℹ️  No changes were made to the configuration file."
 fi
-  echo ""
 
-### Install Dependencies ###
+# Optionally install dependencies
 read -p "Would you like to install the dependencies for the server and client? (y/n) (default: y): " installDeps
 installDeps=${installDeps:-y}
 if [[ "$installDeps" =~ ^[Yy]$ ]]; then
