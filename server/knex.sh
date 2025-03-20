@@ -65,13 +65,15 @@ create_files() {
 
 # If no arguments are provided, run migrations, rollback, and seeding
 if [ $# -eq 0 ]; then
+  echo "ℹ️  Rolling back last migration..."
+  npx knex migrate:rollback
+  echo ""
+
   echo "ℹ️  Running migrations..."
   npx knex migrate:latest
   echo ""
 
-  echo "ℹ️  Rolling back last migration..."
-  npx knex migrate:rollback
-  echo ""
+  sleep 1
 
   echo "ℹ️  Seeding database..."
   npx knex seed:run
