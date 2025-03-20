@@ -7,7 +7,7 @@ The template also includes automated **testing** with:
 -   **Jest** and **Supertest** for back-end API route testing.
 -   **Jest** and **React Testing Library** for front-end component testing.
 
-Additionally, it offers **Docker compatibility**, allowing for easy containerized deployment and development. This ensures a robust, efficient, and flexible development workflow across different environments.
+Additionally, it offers **Docker compatibility**, allowing for easy containerized deployment and development. Docker ensures a consistent environment for running the application, simplifying dependency management and deployment.
 
 ---
 
@@ -56,6 +56,8 @@ Ensure you have the following installed:
 
 ## Running with Docker
 
+### 🔹 Start the application using Docker
+
 ```sh
   docker compose up --build
 ```
@@ -98,6 +100,7 @@ This generates the following migration and seed files:
 migrations/
 ├── 00_roles.js
 ├── 01_users.js
+
 seeds/
 ├── 00_roles.js
 ├── 01_users.js
@@ -119,6 +122,20 @@ Run the following command to grant execute permissions to the setup script:
 
 ```sh
   chmod +x setup.sh
+```
+
+When running `./knex.sh`, you may encounter one of these errors:
+
+**❌ Error:**
+
+-   `./knex.sh: Permission denied`
+-   `Unknown command. './knex.sh' exists but is not an executable file.`
+
+**Solution:**
+Run the following command to grant execute permissions to the knex script:
+
+```sh
+  chmod +x knex.sh
 ```
 
 ---
