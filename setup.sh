@@ -79,7 +79,6 @@ env_updated=false
 clientPort=$(read_env_value "$shared_env" "CLIENT_PORT")
 if [ -n "$clientPort" ]; then
   echo "ℹ️  Client port $clientPort already set in $shared_env. Skipping input."
-  echo ""
 else
   while [ -z "$clientPort" ]; do
     read -p "   Enter client port number (1-65535, default: 3000): " clientPort
