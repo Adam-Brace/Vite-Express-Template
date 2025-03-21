@@ -8,7 +8,7 @@ const cors = require("cors");
 const knex = require("knex")(require("../knexfile")["development"]);
 
 if (!PORT) {
-	dotenv.config({ path: path.resolve(__dirname, "../.env") });
+	dotenv.config({ path: path.resolve(__dirname, "../../.env") });
 	PORT = process.env.SERVER_PORT;
 }
 
