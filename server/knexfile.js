@@ -1,6 +1,8 @@
 const path = require("path");
 const dotenv = require("dotenv");
 require("dotenv").config({ path: "/app_data/.env" });
+const fs = require("fs");
+
 var USER_PASSWORD = process.env.USER_PASSWORD;
 var USER_NAME = process.env.USER_NAME;
 var DATABASE_PORT = process.env.DATABASE_PORT;
@@ -15,11 +17,13 @@ if (!USER_PASSWORD || !USER_NAME || !DATABASE_PORT || !DATABASE_NAME) {
 	DATABASE_NAME = process.env.DATABASE_NAME;
 }
 
+const HOST = fs.existsSync("/.dockerenv") == true ? "db" : "127.0.0.1";
+
 module.exports = {
 	development: {
 		client: "postgresql",
 		connection: {
-			host: "127.0.0.1",
+			host: HOST,
 			password: USER_PASSWORD,
 			user: USER_NAME,
 			port: DATABASE_PORT,
