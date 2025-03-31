@@ -146,9 +146,7 @@ When running Docker with WSL, you may encounter the following error:
 
 `We recommend to activate the WSL integration in Docker Desktop settings. For details about using Docker Desktop with WSL 2, visit: https://docs.docker.com/go/wsl2/`
 
-**Solution:**
-
-Enable WSL Integration in Docker Desktop
+**Solution:** Enable WSL Integration in Docker Desktop
 
 -   Open Docker Desktop on Windows.
 -   Go to Settings > Resources > WSL Integration.
