@@ -98,8 +98,8 @@ This generates the following migration and seed files:
 
 ```sh
 migrations/
-├── 00_roles.js
-├── 01_users.js
+├── 00_20250320193622_roles.js
+├── 01_20250320193622_users.js
 
 seeds/
 ├── 00_roles.js
