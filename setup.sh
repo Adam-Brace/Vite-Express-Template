@@ -206,5 +206,9 @@ else
   echo "⏭  Skipping dependency installation."
 fi
 
+rm -rf .github/
+echo "✅ Cleaned up template files."
+echo ""
+
 echo "✅ Setup complete. You can now start the server and client."
 echo ""
