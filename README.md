@@ -89,7 +89,7 @@ psql -U <$USER_NAME> -p <$DATABASE_PORT>
 Create the database:
 
 ```sql
-CREATE DATABASE <DATABASE_NAME>;
+CREATE DATABASE <$DATABASE_NAME>;
 ```
 
 Exit the PostgreSQL shell:
