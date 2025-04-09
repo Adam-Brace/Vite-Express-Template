@@ -22,41 +22,41 @@ Ensure you have the following installed:
 -   Git (to clone the repository)
 -   [Docker](https://www.docker.com/)
 
-### 🔹 Clone the repository
+#### 🔹 Clone the repository
 
 ```sh
   git clone https://github.com/Adam-Brace/Vite-Express-Template
 ```
 
-### 🔹 Navigate to the project directory
+#### 🔹 Navigate to the project directory
 
 ```sh
   cd Vite-Express-Template
 ```
 
-### 🔹 Run the setup script and follow the prompts
+#### 🔹 Run the setup script and follow the prompts
 
 ```sh
   ./setup.sh
 ```
 
-## Running with Node
+### Running with Node
 
-### 🔹 Start the client
+#### 🔹 Start the client
 
 ```sh
   npm run dev --prefix ./client
 ```
 
-### 🔹 Open a new terminal and start the server
+#### 🔹 Open a new terminal and start the server
 
 ```sh
   npm run dev --prefix ./server
 ```
 
-## Running with Docker
+### Running with Docker
 
-### 🔹 Start the application using Docker
+#### 🔹 Start the application using Docker
 
 ```sh
   docker compose up --build
@@ -64,7 +64,43 @@ Ensure you have the following installed:
 
 ---
 
-## Knex Migrations & Seeding
+## 📕 Create the Database
+
+List all running containers and copy the **CONTAINER ID** of the **postgres:latest** container:
+
+```sh
+docker ps -a
+```
+
+Access the PostgreSQL container:
+
+```sh
+docker exec -it <CONTAINER_ID> bash
+```
+
+Replace `<CONTAINER_ID>` with the copied ID.
+
+Log in to PostgreSQL using credentials from your `.env` file:
+
+```sh
+psql -U "$USER_NAME" -p "$DATABASE_PORT"
+```
+
+Create the database:
+
+```sql
+CREATE DATABASE "$DATABASE_NAME";
+```
+
+Exit the PostgreSQL shell:
+
+```sh
+\q
+```
+
+---
+
+## 🍀 Knex Migrations & Seeding
 
 ### Running Migrations & Seeds
 
