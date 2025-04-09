@@ -86,7 +86,7 @@ Log in to PostgreSQL using credentials from your `.env` file:
 psql -U <$USER_NAME> -p <$DATABASE_PORT>
 ```
 
-Create the database:
+Creating a database:
 
 ```sql
 CREATE DATABASE <$DATABASE_NAME>;
