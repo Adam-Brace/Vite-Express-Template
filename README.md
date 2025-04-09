@@ -64,7 +64,43 @@ Ensure you have the following installed:
 
 ---
 
-## Knex Migrations & Seeding
+## 📕 Create the Database
+
+List all running containers and copy the **CONTAINER ID** of the **postgres:latest** container:
+
+```sh
+docker ps -a
+```
+
+Access the PostgreSQL container:
+
+```sh
+docker exec -it <CONTAINER_ID> bash
+```
+
+Replace `<CONTAINER_ID>` with the copied ID.
+
+Log in to PostgreSQL using credentials from your `.env` file:
+
+```sh
+psql -U "$USER_NAME" -p "$DATABASE_PORT"
+```
+
+Create the database:
+
+```sql
+CREATE DATABASE "$DATABASE_NAME";
+```
+
+Exit the PostgreSQL shell:
+
+```sh
+\q
+```
+
+---
+
+## 🍀 Knex Migrations & Seeding
 
 ### Running Migrations & Seeds
 
