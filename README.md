@@ -1,5 +1,10 @@
 # Vite-Express-Template
 
+<h1 style="color:red;">Warning This Repo Is No Longer Updated</h1>
+https://gitlab.crypticiores.com/templates
+
+---
+
 **Vite-Express-Template** combines **Vite** for fast front-end development with **Express** for back-end API handling. It provides a full-stack setup where **Vite** manages the front-end development workflow with hot-reloading, while **Express** serves API routes and static files, ensuring a seamless development experience. This template includes **PostgreSQL** for the database and **Knex.js** as the query builder, simplifying database interactions.
 
 The template also includes automated **testing** with:
